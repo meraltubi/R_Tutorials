@@ -1,0 +1,124 @@
+---
+title: "Tutorial 1"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## R Markdown
+
+This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+
+## Slide with Bullets
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+## Set up working directory
+
+```{r wd, echo = TRUE}
+getwd() #check where your current working directory is
+setwd("/Volumes/GoogleDrive/My Drive/R_Scripts/") #input correct path
+getwd() #verify the directory is correct
+```
+
+## Install Packages
+```{r dp, echo = TRUE}
+library(dplyr)
+library(tidyverse)
+```
+
+## Import files
+
+```{r file}
+#demogs <- read.csv("Braskie_R_Workshop/tutorial_01/orig_files/df1_corticalthickness.csv")
+```
+
+## Check File Structure and Duplicates
+
+```{r structure}
+demogs.vegf <- demogs.vegf[!duplicated(demogs.vegf$Subject),]
+demogs.vegf <-demogs.vegf[!is.na(demogs.vegf$CSF_VEGFA_pg_mL),]
+```
+
+## Remove Duplicates
+```{r duplicates}
+```
+
+##Remove rows (subjects) if they are missing value in one column
+```{r rowcheck}
+```
+
+## Only Keep complete cases
+```{r complete}
+```
+
+## Join Files Together
+```{r merge}
+#Left
+demogs.vegf <-join(demogs, vegf.new, by="Subject", type="left")
+#Right
+demogs.vegf <-join(demogs, vegf.new, by="Subject", type="left")
+#Both
+demogs.vegf <-join(demogs, vegf.new, by="Subject", type="left")
+```
+
+#SUBSET DATA FILES BY BASELINE VISIT
+```{r subset}
+apoe.bl <-subset(apoe, redcap_event_name=="baseline_arm_1")
+```
+
+
+#rename ID column
+```{r rename}
+#csf <- csf %>% dplyr::rename(Subject.ID = uds_id)
+#apoe <- apoe %>% dplyr::rename(Subject.ID = uds_id)
+```
+
+#EXTRACT ONLY RELEVANT COLUMNS & RENAME SUBJECT COLUMN
+```{r extract}
+
+stru(hhr)
+names(hhr)[1] <- "Subject"
+
+stru(apoe.bl)
+apoe.bl <- apoe.bl[, c(1, 5)]
+names(apoe.bl)[1] <- "Subject"
+
+stru(moca.bl)
+moca.bl <- moca.bl[, c(1, 34)]
+names(moca.bl)[1] <- "Subject"
+```
+
+#COMBINE L & R HEMISPHERE
+```{r bilateral}
+adrc$CA1_LR_vol <- (adrc$CA1_L_volume + adrc$CA1_R_volume)/2
+```
+
+#RECODE DATA
+```{r amyloid}
+adrc$ab.pos <- ifelse(adrc$biomk_abeta42<192, 1, 0)
+table(adrc$ab.pos)
+
+#aaic.upd <-aaic.upd %>%  mutate(ab.pos = if_else(biomk_abeta42 < "192", 1, 0))
+
+```
+
+## Calculate Date Difference
+```{r dates}
+lp.mri$lp_date <-as.Date(lp.mri$lp_date, "%m/%d/%y")
+lp.mri$Study.Date <-as.Date(lp.mri$Study.Date, "%m/%d/%y")
+aic.upd$LP.date<- as.Date("2016-01-01")
+aaic.upd$lp_mri_datediff<- difftime(aaic.upd$LP.date ,aaic.upd$MRI.date , units = c("days"))
+)
+```
+
+## Split Data by Median
+```{r split}
+adrc$high.wmh <-as.factor(ntile(adrc$WMH_Global_normMean, 2) )
+```
